@@ -1,0 +1,31 @@
+from .elements.q2 import shape_q2
+
+def compute_cell_von_mises(conn, xy, a, D):
+    g = 1.0/np.sqrt(3.0)
+    gps = [(-g,-g,1.0),(g,-g,1.0),(g,g,1.0),(-g,g,1.0)]
+    vm = np.zeros(len(conn))
+    for e, nodes in enumerate(conn):
+        xe = xy[nodes,0]; ye = xy[nodes,1]
+        dofs = np.zeros(18, dtype=int)
+        for i_loc, n in enumerate(nodes):
+            dofs[2*i_loc]=2*n; dofs[2*i_loc+1]=2*n+1
+        a_e = a[dofs]
+        mises = []
+        for (xi,eta,w) in gps:
+            N, dN_dxi, dN_deta = shape_q2(xi, eta)
+            J = np.zeros((2,2))
+            J[0,0]=np.dot(dN_dxi,xe); J[0,1]=np.dot(dN_deta,xe)
+            J[1,0]=np.dot(dN_dxi,ye); J[1,1]=np.dot(dN_deta,ye)
+            invJ = np.linalg.inv(J)
+            dN = np.vstack((dN_dxi,dN_deta))
+            dN_dxdy = invJ @ dN
+            B = np.zeros((3,18))
+            for a_loc in range(9):
+                dNdx = dN_dxdy[0,a_loc]; dNdy = dN_dxdy[1,a_loc]; ia = 2*a_loc
+                B[0,ia]=dNdx; B[1,ia+1]=dNdy; B[2,ia]=dNdy; B[2,ia+1]=dNdx
+            eps = B @ a_e
+            sig = D @ eps
+            sxx, syy, sxy = sig
+            mises.append(np.sqrt(sxx**2 - sxx*syy + syy**2 + 3.0*sxy**2))
+        vm[e] = np.mean(mises)
+    return vm

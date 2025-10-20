@@ -1,0 +1,5 @@
+import numpy as np
+
+def build_q2_mesh_rect(x0, x1, y0, y1, nx, ny):
+    # ... devuelve xy (N×2) y conn (nelems×9)
+    return xy, conn

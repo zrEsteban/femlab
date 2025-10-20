@@ -1,0 +1,16 @@
+import numpy as np
+from .elements.q2 import Ke_q2
+from .mesh.rect_q2 import build_q2_mesh_rect
+
+def assemble_global(xy, conn, D, t=1.0):
+    ndofs = 2*len(xy); K = np.zeros((ndofs, ndofs)); f = np.zeros(ndofs)
+    # ... loop elementos, scatter Ke en K
+    return K, f
+
+def apply_dirichlet(K, f, bcs):
+    # ... elimina filas/cols, set RHS
+    return K, f
+
+def apply_neumann_edges(f, conn, xy, edges, t=1.0):
+    # ... integra tracción en aristas
+    return f

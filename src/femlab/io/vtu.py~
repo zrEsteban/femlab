@@ -1,0 +1,6 @@
+import numpy as np
+import xml.sax.saxutils as sx
+
+def write_vtu(filename: str, points: np.ndarray, cells: list[np.ndarray],
+              cell_types: np.ndarray, point_data=None, cell_data=None):
+    # ... escritor VTU “unstructured grid”
